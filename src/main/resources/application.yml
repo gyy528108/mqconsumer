@@ -1,0 +1,19 @@
+server:
+  port: 8822
+
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    path: ./logs/mqconsumer
+
+spring:
+  profiles:
+    active: dev
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto    #id自增
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql
+topic:
+  list: order,delay,pay
