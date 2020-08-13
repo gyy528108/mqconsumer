@@ -1,6 +1,6 @@
 package com.lowi.mqconsumer.dao;
 
-import com.lowi.mqconsumer.entity.Order;
+import com.lowi.mqconsumer.entity.OrderRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
  * @since 2020-08-12
  */
 @Repository
-public interface OrderDao extends BaseMapper<Order> {
-    void delayOrder(Integer id,Integer version);
+public interface OrderDao extends BaseMapper<OrderRecord> {
+
+    int delayOrder(Integer id,Integer version);
 }

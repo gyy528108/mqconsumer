@@ -3,6 +3,6 @@
 <mapper namespace="com.lowi.mqconsumer.dao.OrderDao">
 
     <update id="delayOrder">
-        update `order` set status = -1,`version` = `version`+1 where id = #{id} and `version` = #{version}
+        update `order_record` set status = -1,`version` = `version`+1 where id = #{id} and `version` = #{version}
     </update>
 </mapper>

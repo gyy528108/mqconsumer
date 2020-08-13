@@ -4,7 +4,16 @@ spring:
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  redis:
+    port: 6379
+    password: 123456
+    host: localhost
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 4
+        min-idle: 1
+        max-wait: 500
 apache:
   rocketmq:
     consumer:

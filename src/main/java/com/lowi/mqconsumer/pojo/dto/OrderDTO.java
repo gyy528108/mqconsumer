@@ -19,5 +19,5 @@ import lombok.Data;
 public class OrderDTO {
     private Integer productId;
     private String token;
-    private String orderId;
+    private Integer orderId;
 }

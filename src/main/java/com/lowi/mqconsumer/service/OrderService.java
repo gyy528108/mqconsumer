@@ -2,12 +2,14 @@ package com.lowi.mqconsumer.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lowi.mqconsumer.dao.OrderDao;
-import com.lowi.mqconsumer.entity.Order;
+import com.lowi.mqconsumer.dao.ProductDao;
+import com.lowi.mqconsumer.entity.OrderRecord;
 import com.lowi.mqconsumer.enums.OrderStatusEnum;
 import com.lowi.mqconsumer.pojo.dto.OrderDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,6 +29,11 @@ import org.springframework.stereotype.Service;
 public class OrderService {
     @Autowired
     private OrderDao orderDao;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private ProductDao productDao;
+    private static String PRODUCT_KEY = "product_";
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void delayOrder(OrderDTO orderDTO) {
@@ -34,9 +41,9 @@ public class OrderService {
             logger.info("消费失败：{}", orderDTO);
             return;
         }
-        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("order_id", orderDTO.getOrderId());
-        Order order = orderDao.selectOne(queryWrapper);
+        QueryWrapper<OrderRecord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", orderDTO.getOrderId());
+        OrderRecord order = orderDao.selectOne(queryWrapper);
         if (order == null) {
             logger.info("消费失败：{}", orderDTO);
             return;
@@ -46,6 +53,10 @@ public class OrderService {
             logger.info("消费失败：{}", order);
             return;
         }
-        orderDao.delayOrder(order.getId(), order.getVersion());
+        int delaySuccess = orderDao.delayOrder(order.getId(), order.getVersion());
+        if (delaySuccess > 0) {
+            stringRedisTemplate.opsForValue().increment(PRODUCT_KEY + orderDTO.getProductId(), 1);
+            productDao.updateCount(orderDTO.getProductId());
+        }
     }
 }
